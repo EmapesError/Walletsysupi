@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Wallet System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: #e2e8f0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #93c5fd;
+        }
+
+        .wallet-balance {
+            font-size: 1.5rem;
+            margin: 20px 0;
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: #e2e8f0;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        input[type="number"]:focus {
+            border: 2px solid #93c5fd;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.2);
+            transition: all 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: rgba(226, 232, 240, 0.7);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #60a5fa;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Wallet System</h1>
+        <div class="wallet-balance">Balance: ₹<span id="wallet-balance">0</span></div>
+        <input type="number" id="deposit-amount" placeholder="Enter amount to deposit">
+        <button id="deposit-button">Deposit Now</button>
+        <div class="spinner" id="spinner"></div>
+        <div class="footer">Powered by <strong>Cashfree</strong></div>
+    </div>
+
+    <script>
+        const depositButton = document.getElementById("deposit-button");
+        const spinner = document.getElementById("spinner");
+
+        depositButton.addEventListener("click", async () => {
+            const amount = document.getElementById("deposit-amount").value;
+
+            if (amount <= 0 || isNaN(amount)) {
+                alert("Please enter a valid amount!");
+                return;
+            }
+
+            // Disable button and show spinner
+            depositButton.disabled = true;
+            depositButton.textContent = "Processing...";
+            spinner.style.display = "block";
+
+            try {
+                // Call backend via AJAX (replace with your API endpoint)
+                const response = await fetch(`/deposit?amount=${amount}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert("Deposit successful!");
+                    document.getElementById("wallet-balance").textContent = result.newBalance;
+                } else {
+                    alert("Deposit failed: " + result.message);
+                }
+            } catch (error) {
+                alert("An error occurred. Please try again later.");
+            } finally {
+                // Re-enable button and hide spinner
+                depositButton.disabled = false;
+                depositButton.textContent = "Deposit Now";
+                spinner.style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>
